@@ -111,9 +111,9 @@ if(isset($_POST['submit']))
         <input type="hidden" name="ivalue" value="<?php echo $i;?>" readonly style="border-style:none;outline:none;background-color:transparent;">
         <td><input type="text" id="studentname" name="studentname" value="<?php echo $row['studentname'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
         <td><input type="text" id="maxviva" name="maxviva" value="<?php echo $row['maxviva'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
-        <td><input type="number" id="viva"  max="40" name="<?php echo "viva".$i;?>" value="<?php echo $row['viva'];?>" style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
+        <td><input type="text" id="viva"  name="<?php echo "viva".$i;?>" value="<?php echo $row['viva'];?>" style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="text" id="maxdesination" name="maxdesination" value="<?php echo $row['maxdesination'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
-        <td><input type="number" id="desination" max="60" name="<?php echo "desination".$i;?>" value="<?php echo $row['desination'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
+        <td><input type="text" id="desination"  name="<?php echo "desination".$i;?>" value="<?php echo $row['desination'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="date" id="vivadate" name="<?php echo "vivadate".$i;?>" value="<?php echo $row['vivadate'];?>" style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
         <td><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
         <td><button type="submit" name="submit" value="<?php echo "update".$i;?>">Update</button></td>
@@ -234,13 +234,15 @@ else if($_POST['submit'] == 'save')
   $desination = $_POST[$des];
   $vi = 'vivadate'.$j;
   $vivadate = $_POST[$vi];
+  if(($viva == 'AAA' || $viva == 'TC' || $viva <= '40') && ($desination == 'AAA' || $desination == 'TC' || $desination <= '60'))
+  {
   $update = "UPDATE marksheetstudentdetails SET viva='$viva',desination='$desination',vivadate='$vivadate' WHERE sid ='$sid1'";
   //echo $update;
   $sim=mysqli_query($conn,$update);
   if($sim)
   {
    //echo "update success"; 
-    $query = "SELECT sid,registernumber,studentname,maxviva,maxdesination,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE sid ='$sid1' ";
+    $query = "SELECT sid,registernumber,studentname,maxviva,viva,maxdesination,desination,vivadate,examinername FROM marksheetstudentdetails WHERE sid ='$sid1' ";
   //echo $query;
   $selectresult = mysqli_query($conn,$query);
   while ($row = mysqli_fetch_assoc($selectresult))
@@ -253,9 +255,9 @@ else if($_POST['submit'] == 'save')
         <input type="hidden" name="ivalue" value="<?php echo $i;?>" readonly style="border-style:none;outline:none;background-color:transparent;">
         <td><input type="text" id="studentname" name="studentname" value="<?php echo $row['studentname'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
         <td><input type="text" id="maxviva" name="maxviva" value="<?php echo $row['maxviva'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
+        <td><input type="text" id="viva"   name="<?php echo "viva".$i;?>" value="<?php echo $row['viva'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="text" id="maxdesination" name="maxdesination" value="<?php echo $row['maxdesination'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
-        <td><input type="number" id="viva"  max="40" name="<?php echo "viva".$i;?>" value="<?php echo $row['viva'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
-        <td><input type="number" id="desination"  max="60" name="<?php echo "desination".$i;?>" value="<?php echo $row['desination'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
+        <td><input type="text" id="desination"   name="<?php echo "desination".$i;?>" value="<?php echo $row['desination'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="date" id="vivadate" name="<?php echo "vivadate".$i;?>" value="<?php echo $row['vivadate'];?>" style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
         <td><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
         <td><button type="submit" name="submit" value="<?php echo "update".$i;?>">Update</button></td>
@@ -265,6 +267,7 @@ else if($_POST['submit'] == 'save')
   $i++;
   }
   }
+}
   else
   {
     echo'<script>alert("Failed To Update")</script>';
