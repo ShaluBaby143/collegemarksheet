@@ -66,21 +66,22 @@
 
 <div class="split right">
   <form action="" method="post">
+    <button type="submit" name="submit" value="check" style="float: right;">Total Update</button>
   <center>
     <table border="2">
-      <tr><td colspan="11">
+      <tr><td colspan="8">
         <center><label for="examinername"><strong>ExaminerName</strong></label>
-  <input type="text" name="examinername" id="examinername" placeholder="Enter ExaminerName" style="width: 500px;" /></td></tr></center>
+        <input type="text" id="examinername" name="examinername"  placeholder="Enter Examinername" style="width:500px;">
+  <br><br>
+        <center><label for="vivadate"><strong>VivaDate</strong></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="date" id="vivadate" name="vivadate" value="vivadate" style="width:500px;"></td></tr>
   <br><br>
   <tr></tr><tr></tr>
 <tr>
-        <th>ID</th>
         <th>RegisterNumber</th>
         <th>Student Name </th>
-        <th>Maxviva </th>
-        <th>Viva</th>
-        <th>Maxdesination</th>
-        <th>Desination</th>
+        <th>Viva<br>(Max:40)</th>
+        <th>Desination<br>(Max:60)</th>
         <th>viva Date</th>
         <th>Examiner Name</th>
       </tr>
@@ -98,7 +99,7 @@ if(isset($_POST['submit']))
   $medium = $_POST['medium'];
   $section = $_POST['section'];
   $subjectcode = $_POST['subjectcode'];
-  $query = "SELECT sid,registernumber,studentname,maxviva,maxdesination,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE batch='$batch' AND degree='$degree' AND course='$course' AND shift='$shift' AND medium='$medium' AND section='$section' AND subjectcode='$subjectcode'";
+  $query = "SELECT registernumber,studentname,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE batch='$batch' AND degree='$degree' AND course='$course' AND shift='$shift' AND medium='$medium' AND section='$section' AND subjectcode='$subjectcode'";
   //echo $query;
   $selectresult = mysqli_query($conn,$query);
   while ($row = mysqli_fetch_assoc($selectresult))
@@ -106,25 +107,22 @@ if(isset($_POST['submit']))
     GLOBAL $i;
     ?>
       <tr>
-        <td><input type="text" id="sid" name="<?php echo "sid".$i;?>" value="<?php echo isset($_POST['sid']) ? $_POST['sid'] : $row['sid'] ?>"  readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
         <td><input type="text" id="registernumber" name="<?php echo "registernumber".$i;?>" value="<?php echo $row['registernumber'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
         <input type="hidden" name="ivalue" value="<?php echo $i;?>" readonly style="border-style:none;outline:none;background-color:transparent;">
         <td><input type="text" id="studentname" name="studentname" value="<?php echo $row['studentname'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
-        <td><input type="text" id="maxviva" name="maxviva" value="<?php echo $row['maxviva'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
         <td><input type="text" id="viva"  name="<?php echo "viva".$i;?>" value="<?php echo $row['viva'];?>" style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
-        <td><input type="text" id="maxdesination" name="maxdesination" value="<?php echo $row['maxdesination'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
         <td><input type="text" id="desination"  name="<?php echo "desination".$i;?>" value="<?php echo $row['desination'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="date" id="vivadate" name="<?php echo "vivadate".$i;?>" value="<?php echo $row['vivadate'];?>" style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
-        <td><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
+        <td ><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
         <td><button type="submit" name="submit" value="<?php echo "update".$i;?>">Update</button></td>
-        <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['sid'];?>"></td>
+        <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['registernumber'];?>"></td>
       </tr>
     <?php
   $i++;
   }
 }
-  else if($_POST['submit'] == 'lock')
-  {
+else if($_POST['submit'] == 'lock')
+{
     //print_r($_POST['examinername']); 
   $val = $_POST['checkbox'];
   $var = "";
@@ -137,27 +135,42 @@ if(isset($_POST['submit']))
   if(isset($_POST['checkbox']))
   {
     //print_r($_POST['checkbox']);
-    $set = "SELECT sid,registernumber,studentname,maxviva,maxdesination,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE
-    sid IN (".$var.")";
+    GLOBAL $i;
+  //echo $i;
+  for($j=1;$j<=$_POST['ivalue'];$j++)
+  { 
+  $val ='viva'.$j;
+  $viva = $_POST[$val];
+  $des = 'desination'.$j;
+  $desination = $_POST[$des];
+  $vi = 'vivadate'.$j;
+  $vivadate = $_POST[$vi];
+  $exam = 'examinername'.$j;
+  $examinername = $_POST[$exam];
+  }
+  if($viva != "" && $desination != "" && $vivadate != "" && $examinername != "")
+    {
+    $set = "SELECT registernumber,studentname,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE
+    registernumber IN (".$var.")";
     //echo $set;
     $sql = mysqli_query($conn,$set);
-  }
   while($result = mysqli_fetch_assoc($sql))
   {?>
   <tr>
-    <td><?php echo $result['sid'];?></td>
     <td><?php echo $result['registernumber'];?></td>
     <td><?php echo $result['studentname'];?></td>
-    <td><?php echo $result['maxviva'];?></td>
     <td><?php echo $result['viva'];?></td>
-    <td><?php echo $result['maxdesination'];?></td>
     <td><?php echo $result['desination'];?></td>
     <td><?php echo $result['vivadate'];?></td>
     <td><?php echo $result['examinername'];?></td>
   </tr>
   <?php
   }
-  }
+
+}
+}
+echo '<script>alert("Locked Is Selected")</script>';
+}
 else if($_POST['submit'] == 'clear')
 {
  // echo '<input type="text" id="sid" value=""/>';
@@ -172,29 +185,25 @@ else if($_POST['submit'] == 'clear')
   if(isset($_POST['checkbox']))
   {
     //print_r($_POST['checkbox']);
-    $set = "SELECT sid,registernumber,studentname,maxviva,maxdesination,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE
-    sid NOT IN (".$var.")";
+    $set = "SELECT registernumber,studentname,maxviva,maxdesination,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE registernumber NOT IN (".$var.")";
     //echo $set;
     $sql = mysqli_query($conn,$set);
   }
   while($result = mysqli_fetch_assoc($sql))
   {?>
     <tr>
-    <td><?php echo $result['sid'];?></td>
     <td><?php echo $result['registernumber'];?></td>
     <td><?php echo $result['studentname'];?></td>
-    <td><?php echo $result['maxviva'];?></td>
     <td><input type="text" id="viva" value="<?php echo $result['viva'];?>" style="border-style: none;outline: none;background-color: transparent;width: 25px;"></td>
-    <td><?php echo $result['maxdesination'];?></td>
-    <td><input type="text" id="desination" value="<?php echo $result['desination'];?>" style="border-style: none;outline: none;background-color: transparent;width: 25px;"></td>
+    <td><input type="text" id="desination" value="<?php echo $result['desination'];?>" style="border-style: none;outline: none;background-color: transparent;"></td>
     <td><input type="date" id="vivadate" value="<?php echo $result['vivadate'];?>" style="border-style: none;outline: none;background-color: transparent;width: 125px;"></td>
     <td><input type="text" id="examinername" value="<?php echo $result['examinername'];?>" style="border-style: none;outline: none;background-color: transparent;width: 150px;"></td>
-    <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['sid'];?>"></td>
+    <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['registernumber'];?>"></td>
   </tr>
     <?php
   }
   if($_POST['submit'] == 'clear')
-{
+  {
  // echo '<input type="text" id="sid" value=""/>';
   $val = $_POST['checkbox'];
   $var = "";
@@ -206,7 +215,7 @@ else if($_POST['submit'] == 'clear')
   //echo $var;
   if(isset($_POST['checkbox']))
   {
-    $pack = "UPDATE marksheetstudentdetails SET viva = NULL,desination=NULL,vivadate=NULL,examinername=NULL WHERE sid IN (".$var.")";
+    $pack = "UPDATE marksheetstudentdetails SET viva = NULL,desination=NULL,vivadate=NULL,examinername=NULL WHERE registernumber IN (".$var.")";
     $pack1 = mysqli_query($conn,$pack);
     if($pack1)
     {
@@ -217,7 +226,7 @@ else if($_POST['submit'] == 'clear')
       echo '<script>alert("Failed To Clear")</script>';
     }
   }
-}
+  }
 }
 else if($_POST['submit'] == 'save')
 { 
@@ -226,7 +235,7 @@ else if($_POST['submit'] == 'save')
   //echo $i;
   for($j=1;$j<=$_POST['ivalue'];$j++)
   { 
-  $var = 'sid'.$j;
+  $var = 'registernumber'.$j;
   $sid1 = $_POST[$var];
   $val ='viva'.$j;
   $viva = $_POST[$val];
@@ -236,13 +245,13 @@ else if($_POST['submit'] == 'save')
   $vivadate = $_POST[$vi];
   if(($viva == 'AAA' || $viva == 'TC' || $viva <= '40') && ($desination == 'AAA' || $desination == 'TC' || $desination <= '60'))
   {
-  $update = "UPDATE marksheetstudentdetails SET viva='$viva',desination='$desination',vivadate='$vivadate' WHERE sid ='$sid1'";
+  $update = "UPDATE marksheetstudentdetails SET viva='$viva',desination='$desination',vivadate='$vivadate' WHERE registernumber ='$sid1'";
   //echo $update;
   $sim=mysqli_query($conn,$update);
   if($sim)
   {
    //echo "update success"; 
-    $query = "SELECT sid,registernumber,studentname,maxviva,viva,maxdesination,desination,vivadate,examinername FROM marksheetstudentdetails WHERE sid ='$sid1' ";
+    $query = "SELECT registernumber,studentname,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE registernumber ='$sid1' ";
   //echo $query;
   $selectresult = mysqli_query($conn,$query);
   while ($row = mysqli_fetch_assoc($selectresult))
@@ -250,18 +259,15 @@ else if($_POST['submit'] == 'save')
     GLOBAL $i;
     ?>
       <tr>
-        <td><input type="text" id="sid" name="<?php echo "sid".$i;?>" value="<?php echo isset($_POST['sid']) ? $_POST['sid'] : $row['sid'] ?>"  readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
         <td><input type="text" id="registernumber" name="<?php echo "registernumber".$i;?>" value="<?php echo $row['registernumber'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
         <input type="hidden" name="ivalue" value="<?php echo $i;?>" readonly style="border-style:none;outline:none;background-color:transparent;">
         <td><input type="text" id="studentname" name="studentname" value="<?php echo $row['studentname'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
-        <td><input type="text" id="maxviva" name="maxviva" value="<?php echo $row['maxviva'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
         <td><input type="text" id="viva"   name="<?php echo "viva".$i;?>" value="<?php echo $row['viva'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
-        <td><input type="text" id="maxdesination" name="maxdesination" value="<?php echo $row['maxdesination'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
         <td><input type="text" id="desination"   name="<?php echo "desination".$i;?>" value="<?php echo $row['desination'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="date" id="vivadate" name="<?php echo "vivadate".$i;?>" value="<?php echo $row['vivadate'];?>" style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
-        <td><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
+        <td><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
         <td><button type="submit" name="submit" value="<?php echo "update".$i;?>">Update</button></td>
-        <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['sid'];?>"></td>
+        <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['registernumber'];?>"></td>
       </tr>
     <?php
   $i++;
@@ -274,6 +280,44 @@ else if($_POST['submit'] == 'save')
   }
 }
 echo '<script>alert("Update Successfully")</script>';
+}
+else if($_POST['submit'] == 'check')
+{
+  GLOBAL $i;
+  //echo $i;
+  for($j=1;$j<=$_POST['ivalue'];$j++)
+  { 
+  $var = 'registernumber'.$j;
+  $sid1 = $_POST[$var];
+  $exam = 'examinername'.$j;
+  $examinername = $_POST['examinername'];
+  $vi1 = 'vivadate'.$j;
+  $vivadate = $_POST['vivadate'];
+  $check = "UPDATE marksheetstudentdetails SET examinername = '$examinername',vivadate = '$vivadate' WHERE registernumber = '$sid1'";
+  $che=mysqli_query($conn,$check);
+  if($che)
+  {
+    //echo "update success";
+    $sel = "SELECT registernumber,studentname,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE registernumber = '$sid1'";
+    $selquery = mysqli_query($conn,$sel);
+    while($row = mysqli_fetch_assoc($selquery))
+    {?>
+      <tr><td><?php echo $row['registernumber'];?></td>
+          <td><?php echo $row['studentname'];?></td>
+          <td><?php echo $row['viva'];?></td>
+          <td><?php echo $row['desination'];?></td>
+          <td><?php echo $row['vivadate'];?></td>
+          <td><?php echo $row['examinername'];?></td>
+      </tr>
+      <?php
+    }
+  } 
+  else
+  {
+    echo "update not success";
+  }
+  }
+  echo '<script>alert("Update Successfully")</script>';
 }
 else
 {
@@ -290,42 +334,39 @@ else
       $update1="UPDATE marksheetstudentdetails SET examinername='$examinername' WHERE registernumber = '$registernumber'";
       //echo $update1;
       $sim=mysqli_query($conn,$update1);
-      if($sim)
-        {
-          $query = "SELECT sid,registernumber,studentname,maxviva,maxdesination,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE registernumber ='$registernumber' ";
-  //echo $query;
-  $selectresult = mysqli_query($conn,$query);
-  while ($row = mysqli_fetch_assoc($selectresult))
-  {
-    GLOBAL $i;
-    ?>
+    if($sim)
+    {
+      $query = "SELECT registernumber,studentname,viva,desination,vivadate,examinername FROM marksheetstudentdetails WHERE registernumber ='$registernumber' ";
+    //echo $query;
+    $selectresult = mysqli_query($conn,$query);
+    while ($row = mysqli_fetch_assoc($selectresult))
+    {
+      GLOBAL $i;
+      ?>
       <tr>
-        <td><input type="text" id="sid" name="<?php echo "sid".$i;?>" value="<?php echo isset($_POST['sid']) ? $_POST['sid'] : $row['sid'] ?>"  readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
         <td><input type="text" id="registernumber" name="<?php echo "registernumber".$i;?>" value="<?php echo $row['registernumber'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
         <input type="hidden" name="ivalue" value="<?php echo $i;?>" readonly style="border-style:none;outline:none;background-color:transparent;">
         <td><input type="text" id="studentname" name="studentname" value="<?php echo $row['studentname'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
-        <td><input type="text" id="maxviva" name="maxviva" value="<?php echo $row['maxviva'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:25px;"></td>
-        <td><input type="text" id="maxdesination" name="maxdesination" value="<?php echo $row['maxdesination'];?>" readonly style="border-style:none;outline:none;background-color:transparent; width:100px;"></td>
         <td><input type="number" id="viva"  max="40" name="<?php echo "viva".$i;?>" value="<?php echo $row['viva'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="number" id="desination"  max="60" name="<?php echo "desination".$i;?>" value="<?php echo $row['desination'];?>"  style="border-style:none;outline:none;background-color:transparent; width:50px;"></td>
         <td><input type="date" id="vivadate" name="<?php echo "vivadate".$i;?>" value="<?php echo $row['vivadate'];?>" style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
-        <td><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:125px;"></td>
+        <td><input type="text" id="examinername" name="<?php echo "examinername".$i;?>" value="<?php echo $row['examinername'];?>"  style="border-style:none;outline:none;background-color:transparent; width:150px;"></td>
         <td><button type="submit" name="submit" value="<?php echo "update".$i;?>">Update</button></td>
-        <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['sid'];?>"></td>
+        <td><input type="checkbox" name="checkbox[]" value="<?php echo $row['registernumber'];?>"></td>
       </tr>
     <?php
   $i++;
   }
   }
-      else
-        {
-          echo '<script>alert("Failed To Update")</script>'; 
-        }
-      }
+    else
+    {
+      echo '<script>alert("Failed To Update")</script>'; 
+    }
+  }
   }
   echo '<script>alert("Update Successfully")</script>'; 
 }
-}
+}  
 ?>
 </table>
 </center>
